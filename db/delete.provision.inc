@@ -14,5 +14,6 @@ function drush_db_provision_delete_validate() {
 function drush_db_provision_delete() {
   if (d()->type === 'site') {
     d()->service('db')->destroy_site_database();
+    drush_provision_ignore_db_error();
   }
 }
