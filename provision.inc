@@ -14,7 +14,7 @@ drush_errors_on();
 function drush_provision_ignore_db_error() {
   $error_log = &drush_get_context('DRUSH_ERROR_LOG', array());
   if ($error_log) {
-    drush_log('Provision delete is able to continue if the DB is wrong', 'ok');
+    drush_log('Provision occurred errors but ignoring', 'ok');
     $error_log = array();
     $errorcode = &drush_get_context('DRUSH_ERROR_CODE', DRUSH_SUCCESS);
     $errorcode = DRUSH_SUCCESS;
