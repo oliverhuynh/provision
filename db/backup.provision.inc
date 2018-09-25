@@ -2,6 +2,10 @@
 
 function drush_db_pre_provision_backup() {
   d()->service('db')->generate_dump();
+  if (drush_get_option('force', false)) {
+    drush_log("clearing error");
+    drush_set_context('DRUSH_ERROR_CODE', DRUSH_SUCCESS);
+  }
 }
 
 function drush_db_pre_provision_backup_rollback() {
