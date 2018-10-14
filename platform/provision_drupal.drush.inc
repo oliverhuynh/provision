@@ -100,7 +100,7 @@ function drush_provision_drupal_provision_install_backend() {
  *    Overwrite e.g. the files directory on the slave.
  *    Useful when the master server has donw file operations, such as restoring a backup.
  */
-function provision_drupal_push_site($override_slave_authority = FALSE) {
+function provision_drupal_push_site($override_slave_authority = FALSE, $myexclude = '') {
 
   provision_file()->create_dir(d()->server->http_platforms_path, dt("Platforms"), 0755);
   d()->server->sync(d()->server->http_platforms_path, array(
@@ -116,15 +116,16 @@ function provision_drupal_push_site($override_slave_authority = FALSE) {
     $cluster = d()->platform->web_server->http_service_type == 'cluster' ? TRUE : FALSE;
     $options = array();
     if ($override_slave_authority || $cluster) {
-      $exclude = NULL;
+      $exclude = '';
     }
     else {
       $exclude = 'files/*' . PATH_SEPARATOR . 'private/*';
     }
+    $exclude = implode(':', array_filter(array($exclude, $myexclude)));
 
     // Store the current exclude-path option
     $old_exclude = NULL;
-    if(!is_null($exclude)) {
+    if($exclude) {
       $old_exclude = drush_get_option('exclude-paths');
       drush_set_option('exclude-paths', $exclude);
     }
@@ -133,7 +134,7 @@ function provision_drupal_push_site($override_slave_authority = FALSE) {
     d()->service('http')->sync(d()->site_path, $options);
 
     // Reset the exclude-path option
-    if(!is_null($exclude)) {
+    if($exclude) {
       if(empty($old_exclude)) {
         drush_unset_option('exclude-paths');
       } else {
@@ -439,7 +440,7 @@ function _provision_drupal_maintain_aliases() {
       d()->service('http')->sync($config->filename());
     }
     else {
-      _provision_drupal_delete_aliases();
+      // _provision_drupal_delete_aliases();
       if (!d()->redirection) {
         foreach (d()->aliases as $alias) {
           if ($alias = trim($alias)) {

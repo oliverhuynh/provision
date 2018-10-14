@@ -62,6 +62,9 @@ function drush_provision_drupal_provision_backup_suggest_filename() {
  * Implentation of hook_provision_backup()
  */
 function drush_provision_drupal_provision_backup() {
+  // Oliver: Ignore pushing site at the end
+  drush_set_option('provision_save_config', FALSE);
+
   $backup_file = drush_get_option('backup_file');
   // Adds the site directory into the backup file
   drush_log(dt("Adding sites directory to !backup_file", array('!backup_file' => $backup_file)), 'backup');
@@ -82,8 +85,8 @@ function drush_provision_drupal_provision_backup() {
 
     // Write the uncloaked credentials to the settings.php
     _provision_drupal_create_settings_file();
-    provision_drupal_push_site();
-
+    // @TODO Oliver: Wait, it is pushing database.sql also
+    provision_drupal_push_site(FALSE, '*.sql');
   }
 
   $olddir = getcwd();
@@ -111,8 +114,8 @@ function drush_provision_drupal_provision_backup() {
     drush_log(dt("Re-cloaking database credentials after backup"));
     drush_set_option('provision_db_cloaking', TRUE);
     _provision_drupal_create_settings_file();
-    provision_drupal_push_site();
-
+    // @TODO Oliver: Wait, it is pushing database.sql also
+    provision_drupal_push_site(FALSE, '*.sql');
   }
 
   if (!$result && !drush_get_option('force', false)) {
