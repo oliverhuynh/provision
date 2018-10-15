@@ -149,7 +149,9 @@ function drush_provision_drupal_pre_provision_verify() {
     $pr = _scrub_object(provision_find_packages());
     drush_set_option('packages', $pr, 'drupal');
     provision_drupal_push_site();
-    drush_set_option('packages', $pr, 'drupal');
+
+    // Oliver: Fix bug: Revert packages because it's changed
+    drush_set_option('packages', $pr, 'process');
   }
   elseif (d()->type === 'site') {
     drush_set_option('packages', _scrub_object(provision_drupal_system_map()), 'site');
